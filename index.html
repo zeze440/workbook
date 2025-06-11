@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 영어 워크북 생성기 - 대량 지문 처리</title>
+    <link rel="stylesheet" href="../static/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 AI 영어 워크북 생성기</h1>
+        <p>대량 지문 처리 및 배치 워크북 생성 시스템</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('single')">
+          📝 단일 지문
+        </button>
+        <button class="tab" onclick="switchTab('batch')">📚 대량 처리</button>
+        <button class="tab" onclick="switchTab('results')">📊 결과 관리</button>
+      </div>
+
+      <!-- 단일 지문 탭 -->
+      <div id="singleTab" class="tab-content active">
+        <div class="main-grid">
+          <div class="section input">
+            <h3 class="section-title">📝 단일 지문 처리</h3>
+
+            <div class="api-settings">
+              <h4>🔑 API 설정</h4>
+              <div class="form-group">
+                <label for="apiKey">OpenAI API Key:</label>
+                <input type="password" id="apiKey" placeholder="sk-..." />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="singleTitle">워크북 제목:</label>
+              <input type="text" id="singleTitle" value="AI 생성 영어 워크북" />
+            </div>
+
+            <div class="form-group">
+              <label for="grammarSelection">🎯 생성할 문법 유형 선택:</label>
+              <div class="grammar-selector">
+                <div class="grammar-categories">
+                  <div class="grammar-category">
+                    <h5>🔥 고급 문법</h5>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="conditionals" checked />
+                      <span>복합 가정법 (Mixed Conditionals)</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="inversion" checked />
+                      <span>도치구문 (Inversion)</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="participles" checked />
+                      <span>고급 분사구문</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="relative_clauses" checked />
+                      <span>복잡한 관계절</span>
+                    </label>
+                  </div>
+
+                  <div class="grammar-category">
+                    <h5>⚡ 최고급 문법</h5>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="subjunctive" checked />
+                      <span>가정법 (Subjunctive)</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="ellipsis" checked />
+                      <span>생략 구문</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="parallelism" checked />
+                      <span>병렬구조</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="tense_sequence" checked />
+                      <span>시제 일치</span>
+                    </label>
+                  </div>
+
+                  <div class="grammar-category">
+                    <h5>📚 어법 심화</h5>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="prepositions" checked />
+                      <span>전치사/구동사</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input
+                        type="checkbox"
+                        value="gerund_infinitive"
+                        checked
+                      />
+                      <span>동명사/부정사</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="conjunctions" checked />
+                      <span>고급 접속사</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="emphasis" checked />
+                      <span>강조 구문</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grammar-actions">
+                  <button
+                    type="button"
+                    class="btn small"
+                    onclick="selectAllGrammar()"
+                  >
+                    ✅ 전체 선택
+                  </button>
+                  <button
+                    type="button"
+                    class="btn small"
+                    onclick="deselectAllGrammar()"
+                  >
+                    ❌ 전체 해제
+                  </button>
+                  <button
+                    type="button"
+                    class="btn small warning"
+                    onclick="selectRecommended()"
+                  >
+                    ⭐ 추천 선택
+                  </button>
+                </div>
+
+                <div class="selected-count">
+                  선택된 문법 유형: <span id="selectedGrammarCount">12</span>개
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="singleText">영어 지문:</label>
+              <textarea
+                id="singleText"
+                placeholder="여기에 영어 지문을 입력하세요..."
+              >
+What makes proverbs so enduring, despite their apparent simplicity, is not merely their surface meaning but the profound wisdom they encapsulate through metaphorical language that transcends cultural boundaries.</textarea
+              >
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="singleCharCount">0</div>
+                <div class="stat-label">글자 수</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="singleWordCount">0</div>
+                <div class="stat-label">단어 수</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">5,247</div>
+                <div class="stat-label">어휘 DB</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">문제 유형</div>
+              </div>
+            </div>
+
+            <div class="grammar-preview">
+              <h4>📋 선택된 문법 유형 미리보기</h4>
+              <div id="grammarTags"></div>
+              <div class="difficulty-indicator">
+                <span>난이도:</span>
+                <div class="difficulty-bar">
+                  <div
+                    class="difficulty-fill"
+                    id="difficultyFill"
+                    style="width: 85%"
+                  ></div>
+                </div>
+                <span id="difficultyText">최고급</span>
+              </div>
+            </div>
+
+            <button
+              class="btn"
+              id="generateSingleBtn"
+              onclick="generateSingleWorkbook()"
+            >
+              🚀 워크북 생성하기
+            </button>
+          </div>
+
+          <div class="section output">
+            <h3 class="section-title">📚 워크북 미리보기</h3>
+            <div class="workbook-preview" id="singlePreview">
+              <div style="text-align: center; color: #7f8c8d; padding: 50px">
+                <h3>🎯 워크북 생성 준비 완료</h3>
+                <p>지문을 입력하고 '워크북 생성하기' 버튼을 클릭하세요.</p>
+              </div>
+            </div>
+            <button
+              class="btn success"
+              id="downloadSingleBtn"
+              onclick="downloadWorkbook('single')"
+              style="display: none; margin-top: 15px"
+            >
+              💾 워크북 다운로드
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 대량 처리 탭 -->
+      <div id="batchTab" class="tab-content">
+        <div class="main-grid">
+          <div class="section input">
+            <h3 class="section-title">📚 대량 지문 관리</h3>
+
+            <div class="form-group">
+              <label for="bulkTextInput"
+                >지문 일괄 입력 (각 지문을 --- 로 구분):</label
+              >
+              <textarea
+                id="bulkTextInput"
+                class="bulk-text-input"
+                placeholder="지문 1
+
+---
+
+지문 2
+
+---
+
+지문 3"
+              >
+What makes proverbs so enduring, despite their apparent simplicity, is not merely their surface meaning but the profound wisdom they encapsulate through metaphorical language that transcends cultural boundaries.
+
+---
+
+Learning a new language opens doors to understanding different cultures and perspectives. It challenges our assumptions about communication and helps us develop cognitive flexibility that serves us well in many areas of life.
+
+---
+
+The rapid advancement of artificial intelligence has fundamentally transformed how we approach problem-solving in various fields. From healthcare to education, AI systems are augmenting human capabilities and creating new possibilities for innovation.</textarea
+              >
+            </div>
+
+            <div class="form-group">
+              <label>🎯 배치 처리용 문법 설정:</label>
+              <div class="batch-grammar-settings">
+                <div class="setting-item">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      id="useCustomGrammar"
+                      onchange="toggleCustomGrammar()"
+                    />
+                    <span>커스텀 문법 설정 사용</span>
+                  </label>
+                </div>
+                <div class="setting-item">
+                  <label class="checkbox-item">
+                    <input type="checkbox" id="randomizeGrammar" checked />
+                    <span>지문별 문법 유형 무작위 적용</span>
+                  </label>
+                </div>
+                <div class="setting-item">
+                  <label for="grammarPerText">지문당 문법 유형 수:</label>
+                  <select id="grammarPerText" class="form-select">
+                    <option value="3">3개</option>
+                    <option value="5" selected>5개</option>
+                    <option value="8">8개</option>
+                    <option value="all">전체</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="bulk-actions">
+              <button class="btn" onclick="parseTexts()">📝 지문 파싱</button>
+              <button
+                class="btn success"
+                onclick="startBatchGeneration()"
+                id="batchGenerateBtn"
+                disabled
+              >
+                🚀 전체 생성 시작
+              </button>
+              <button
+                class="btn warning"
+                onclick="pauseBatchGeneration()"
+                id="pauseBtn"
+                style="display: none"
+              >
+                ⏸️ 일시정지
+              </button>
+              <button class="btn danger" onclick="clearAllTexts()">
+                🗑️ 전체 삭제
+              </button>
+            </div>
+
+            <div class="text-manager" id="textManager">
+              <h4>📋 등록된 지문 목록 (0개)</h4>
+              <div id="textList"></div>
+            </div>
+          </div>
+
+          <div class="section output">
+            <h3 class="section-title">⚡ 배치 처리 현황</h3>
+
+            <div class="progress-section" id="batchProgress">
+              <div class="overall-progress">
+                <h4>전체 진행률</h4>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" id="overallProgressBar"></div>
+                </div>
+                <div class="progress-text" id="overallProgressText">
+                  대기 중...
+                </div>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-number" id="totalTexts">0</div>
+                  <div class="stat-label">총 지문</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-number" id="completedTexts">0</div>
+                  <div class="stat-label">완료</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-number" id="failedTexts">0</div>
+                  <div class="stat-label">실패</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-number" id="estimatedTime">-</div>
+                  <div class="stat-label">예상 시간</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="batch-queue">
+              <h4>🔄 처리 대기열</h4>
+              <div id="queueList">
+                <div style="text-align: center; color: #7f8c8d; padding: 20px">
+                  대기 중인 지문이 없습니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결과 관리 탭 -->
+      <div id="resultsTab" class="tab-content">
+        <div class="main-grid">
+          <div class="section input">
+            <h3 class="section-title">📊 생성 결과 통계</h3>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="totalWorkbooks">0</div>
+                <div class="stat-label">생성된 워크북</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="totalProblems">0</div>
+                <div class="stat-label">총 문제 수</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="avgGenerationTime">0</div>
+                <div class="stat-label">평균 생성시간(초)</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="successRate">100%</div>
+                <div class="stat-label">성공률</div>
+              </div>
+            </div>
+
+            <div class="bulk-actions">
+              <button class="btn success" onclick="downloadAllWorkbooks()">
+                📦 전체 다운로드
+              </button>
+              <button class="btn warning" onclick="exportStatistics()">
+                📈 통계 내보내기
+              </button>
+              <button class="btn danger" onclick="clearResults()">
+                🗑️ 결과 초기화
+              </button>
+            </div>
+          </div>
+
+          <div class="section output">
+            <h3 class="section-title">📋 워크북 목록</h3>
+            <div class="results-list" id="resultsList">
+              <div style="text-align: center; color: #7f8c8d; padding: 50px">
+                생성된 워크북이 없습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="../static/js/script.js"></script>
+  </body>
+</html>
